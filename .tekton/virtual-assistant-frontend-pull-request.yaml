@@ -43,13 +43,36 @@ spec:
     value: |
       #!/bin/bash
       set -ex
-      npm run test
+      # --runInBand is required: parallel Jest workers use too much memory for CI.
+      npm run test -- --runInBand
+      echo "Exit code: $?"
+     
 
   # E2E tests script - ONLY run tests, dependencies installed in workspace-setup-script
   - name: e2e-tests-script
     value: |
       #!/bin/bash
       set -ex
+
+      # Wait for connectivity through the dev proxy to the console root.
+      echo "Waiting for dev proxy connectivity..."
+      if ! timeout 120s bash -c '
+        until curl -kfsS --connect-timeout 5 --max-time 10 \
+          --output /dev/null https://stage.foo.redhat.com:1337/; do
+          echo "Dev proxy not ready yet; retrying..."
+          sleep 1
+        done
+      '; then
+        echo "ERROR: Dev proxy readiness failed within the 120-second limit; skipping Playwright." >&2
+        echo "Hostname resolution for stage.foo.redhat.com:"
+        getent hosts stage.foo.redhat.com || true
+        echo "Verbose dev proxy connection diagnostics:"
+        curl -vk --connect-timeout 5 --max-time 10 \
+          --output /dev/null https://stage.foo.redhat.com:1337/ || true
+        exit 1
+      fi
+      echo "Dev proxy connectivity established!"
+
       npx playwright test
 
   # Run app script - start Caddy to serve app assets
@@ -57,7 +80,7 @@ spec:
     value: |
       #!/bin/bash
       set -ex
-      caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+      /usr/bin/caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
 
   # E2E configuration
   - name: e2e-playwright-image
@@ -82,14 +105,29 @@ spec:
   taskRunTemplate:
     serviceAccountName: build-pipeline-virtual-assistant-frontend
     podTemplate:
-      # Override /etc/hosts to redirect stage.foo.redhat.com to localhost
+      # Resolve the dev proxy hostname to IPv4 loopback.
       hostAliases:
-        - ip: "::1"
-          hostnames:
-            - "stage.foo.redhat.com"
         - ip: "127.0.0.1"
           hostnames:
             - "stage.foo.redhat.com"
+      # Increase resource limits for test stages (OOM prevention)
+      containers:
+      - name: step-workspace-setup
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+      - name: step-unit-tests
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1500m"
+          limits:
+            memory: "8Gi"
+            cpu: "2000m"
   workspaces:
   - name: workspace
     volumeClaimTemplate:
