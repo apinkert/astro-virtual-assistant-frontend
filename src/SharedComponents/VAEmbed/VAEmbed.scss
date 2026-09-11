@@ -1,32 +1,19 @@
-.va-embed {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 0;
-
+.virtualAssistant .va-embed {
   .pf-chatbot__header {
     display: none;
   }
 
+  // Fallback for any other prompt-suggestions instances
   .pf-chatbot__prompt-suggestions {
     flex-direction: column;
   }
 
+  // Override PatternFly's default prompt suggestions layout
+  // PatternFly uses .pf-chatbot--embedded .pf-chatbot--layout--welcome .pf-chatbot__prompt-suggestions
+  // with flex-direction: row at 64rem (1024px)
+  // Our selector has higher specificity (5 classes vs 3), so no !important needed
   .pf-chatbot--embedded .pf-chatbot--layout--welcome .pf-chatbot__prompt-suggestions {
     flex-direction: column;
-  }
-
-  #ai-chatbot {
-    height: 100%;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0;
-  }
-
-  .pf-chatbot--embedded {
-    height: 100%;
   }
 }
 
