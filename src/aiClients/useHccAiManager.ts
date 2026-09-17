@@ -51,8 +51,7 @@ export default function useHccAiManager(): UseManagerHook {
       selectionTitle: 'HCC AI Assistant',
       selectionDescription: 'Get help with the Hybrid Cloud Console, manage your organization, configure settings, and more.',
       stateManager,
-      docsUrl:
-        'https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/getting_started_with_the_red_hat_hybrid_cloud_console/hcc-help-options_getting-started#virtual-assistant_getting-started',
+      docsUrl: 'https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/get_started-ai_powered_support#virtual-assistant',
       welcome: {
         buttons: [
           {

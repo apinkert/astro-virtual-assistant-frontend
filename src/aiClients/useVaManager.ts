@@ -48,8 +48,7 @@ export default function useVaManager(): UseManagerHook {
       stateManager,
       model: Models.VA,
       historyManagement: false,
-      docsUrl:
-        'https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/getting_started_with_the_red_hat_hybrid_cloud_console/hcc-help-options_getting-started#virtual-assistant_getting-started',
+      docsUrl: 'https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/get_started-ai_powered_support#virtual-assistant',
       streamMessages: false,
       modelName: 'Hybrid Cloud Console - Virtual Assistant',
       selectionTitle: 'Hybrid Cloud Console',
