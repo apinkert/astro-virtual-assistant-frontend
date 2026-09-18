@@ -1,4 +1,9 @@
-.virtualAssistant .va-embed {
+// Note: fec.config.js has sassPrefix: '.virtualAssistant', so all selectors
+// are automatically wrapped with .virtualAssistant
+
+.va-embed {
+  // NOTE: height/display/flex-direction/flex are set via inline styles in VAEmbed.tsx
+
   .pf-chatbot__header {
     display: none;
   }
